@@ -6,6 +6,7 @@ from The_Owner.models import Project
 from django.contrib.auth.models import User 
 from The_Owner.models import Owner
 
+
 class Investor(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     date_of_birth = models.DateField(blank=True, null=True)
@@ -86,3 +87,11 @@ class InvestorRatingComment(models.Model):
    
     # def __str__(self):
     #     return f'Profile of {self.user.username}'
+class Report(models.Model):
+    comment = models.ForeignKey(InvestorRatingComment, on_delete=models.CASCADE)
+    reporter = models.ForeignKey(User, on_delete=models.CASCADE)
+    reason = models.TextField(blank=True, null=True)
+    date_reported = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Report by {self.reporter.username} on {self.comment.id}'

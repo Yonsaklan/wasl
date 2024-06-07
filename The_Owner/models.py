@@ -23,10 +23,10 @@ class Owner(models.Model):
     def __str__(self):
         return f'Profile of {self.user.username}'
 
-##############################Category##################################################
-
+############################## Category ##################################################
 class ProjectCategory(models.Model):
-    category = models.TextField(max_length=50)
+    category = models.CharField(max_length=50)
+
     def __str__(self):
         return self.category
 
@@ -47,13 +47,15 @@ class Project(models.Model):
     active = models.BooleanField(default=True)
     created = models.DateTimeField(default=datetime.now)
     total_projects = models.IntegerField(default=0)
+    ratings = models.ManyToManyField(User, through='Rating')
+
 
 
     def average_rating(self):
-        ratings = self.ratings.all()
-        if ratings:
+        ratings = self.project_ratings.all()
+        if ratings.exists():
             total = sum(rating.rating for rating in ratings)
-            return total / len(ratings)
+            return total / ratings.count()
         return 0
 
    
@@ -68,6 +70,17 @@ class Project(models.Model):
     
     def __str__(self):
         return self.title
+    
+    
+############################## Rating ##################################################
+class Rating(models.Model):
+    project = models.ForeignKey(Project, related_name='project_ratings', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    rating = models.IntegerField()
+    comment = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return f'{self.project.title} - {self.rating}'
       
 ##############################Photo##################################################
 
