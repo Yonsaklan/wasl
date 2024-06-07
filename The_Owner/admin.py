@@ -3,7 +3,6 @@ from .models import Owner, ProjectCategory, Project, Photo , ProjectStatus
 
 admin.site.register(Owner)
 admin.site.register(ProjectCategory)
-admin.site.register(Project)
 admin.site.register(Photo)
 admin.site.register(ProjectStatus)
 
