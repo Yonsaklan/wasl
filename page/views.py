@@ -115,6 +115,7 @@ def reservation(request):
             project_instance = add_project.save(commit=False)
             project_instance.owner = request.user.owner  # تحديد الـ owner تلقائيًا
             project_instance.save()
+            messages.success(request, 'تم اضافة مشروعك')
 
     # جلب جميع المشاريع من قاعدة البيانات
     projects = Project.objects.all()
@@ -253,7 +254,7 @@ from The_Owner.forms import MessageForm
 
 
 
-@login_required
+
 def twsl(request):
     user_messages = None
 

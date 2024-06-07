@@ -141,34 +141,31 @@
                 <!-- هنا يمكنك إضافة الصور أو أي محتوى آخر -->
             </div>
         </div>
-    </div>
-    
-      
-    <div class="main-container">
-      {% if request.user.owner %}
-      <!-- القطعة الأولى -->
-      <div class="info-blockk">
-        <div class="info-text">قدم طلبك للحصول على استثمار
-          هل تبحث عن تمويل يساعد بنمو شركتك ويحقق أهدافك</div>
-        <a href="{% url 'reservation' %}" class="info-linkk">ارفع مشروع</a>
+  
       </div>
-    
- <!-- القطعة الثالثة -->
+      
+     
+      
+        <!-- الديف الرئيسي -->
+        <div class="main-container">
+          <!-- القطعة الأولى -->
+          <div class="info-blockk">
+            <div class="info-text">لمعرفة كل ما هو متعلق برفع المشاريع والترويج ، انتقل الى الصفحة التالية</div>
+            <a href="{% url 'owner_method' %}" class="info-linkk">مساعدة مالك المشروع</a>
+          </div>
+          <!-- القطعة الثانية -->
+          <div class="info-blockk">
+            <div class="info-text"> لمعرفة كل ما هو متعلق بالاستثمار في المشاريع انتقل الى الصفحة التالية</div>
+            <a href="{% url 'inv_method' %}" class="info-linkk"> مساعدة المستثمر</a>
+          </div>
+           <!-- القطعة الثالثة -->
  <div class="info-blockk">
   <div class="info-text">طلب خدمة دراسة جدوى للمشاريع. سواء كنت مستثمرًا أو مالك مشروع، احصل على دراسة جدوى متكاملة.</div>
   <a href="{% url 'feasibility_study' %}" class="info-linkk">طلب دراسة جدوى</a>
 </div>
-
-
-      <!-- القطعة الثانية -->
-      <div class="info-blockk">
-        <div class="info-text">قم بااستكشاف افضل &nbsp; و &nbsp; اخر الفرص الاستثمارية المتاحة و كن جزءًا&nbsp; من &nbsp;إحدى الشركات الواعدة</div>
-        <a href="{% url 'deals' %}" class="info-linkk">استثمر</a>
-      </div>
-    
+        </div>
      
-    </div>
-    
+       
 
 <div class="search-form">
   <div class="container">
@@ -223,9 +220,9 @@
           <div class="row">
             <div class="col-lg-6 col-md-12">
               {% if project.image %}
-              <div class="project-image" style="background-image: url('{{ project.image.url }}');"></div>
+              <div class="project-image" style="background-image: url('{{ project.image.url }}');"><div class="project-status">{{ project.status }}</div></div>
               {% else %}
-              <div class="project-image" style="background-image: url('{% static 'assets/images/default-image.jpeg' %}');"></div>
+              <div class="project-image" style="background-image: url('{% static 'assets/images/default-image.jpeg' %}');"><div class="project-status">{{ project.status }}</div></div>
               {% endif %}
             </div>
             <div class="col-lg-6 col-md-12 align-self-center">
@@ -249,7 +246,9 @@
                   {{ project.discripe|safe }}
                 </p>
                 <div class="main-button1">
+                  {% if request.user.investor %}
                   <a href="{% url 'invreq' project.id %}">الاستثمار في المشروع</a>
+                  {% endif %}
                   <a href="{% url 'project_detail' project.id %}">تعليقات حول المشروع</a>
                 </div>
               </div>
@@ -731,6 +730,15 @@ document.getElementById('new-filter-form').addEventListener('submit', function (
     transition: all .3s;
     position: relative;
     overflow: hidden;
+}
+
+.project-status {
+  position: absolute;
+  background-color: #22b3c1;
+  padding: 7px;
+  border-top-right-radius: 10px ;
+  border-bottom-right-radius: 10px;
+
 }
 
   </style>   
