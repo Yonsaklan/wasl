@@ -103,10 +103,12 @@ twsl
         <h4 class="comment-user">{{ comment.investor.user.username }}</h4>
         <p class="comment-text">{{ comment.comment }}</p>
         <p class="comment-rating">التقييم: {{ comment.rating }}</p>
+        <button onclick="reportComment('{{ comment.id }}')">إبلاغ</button>
     </div>
 {% empty %}
     <p class="no-comments">لا توجد تعليقات بعد.</p>
 {% endfor %}
+
 <!-- عرض متوسط التقييم -->
 <span class="average-rating">متوسط التقييم: {{ average_rating }}</span>
 
@@ -207,5 +209,45 @@ twsl
       display: block;
   }
 </style>
+<script>
+  function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+          const cookies = document.cookie.split(';');
+          for (let i = 0; i < cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                  cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                  break;
+              }
+          }
+      }
+      return cookieValue;
+  }
 
+  function reportComment(commentId) {
+      const csrftoken = getCookie('csrftoken');
+      
+      fetch("{% url 'report_comment' %}", {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json',
+              'X-CSRFToken': csrftoken
+          },
+          body: JSON.stringify({ comment_id: commentId })
+      })
+      .then(response => response.json())
+      .then(data => {
+          if (data.success) {
+              alert('تم إرسال البلاغ بنجاح.');
+          } else {
+              alert('حدث خطأ أثناء إرسال البلاغ: ' + data.error);
+          }
+      })
+      .catch(error => {
+          console.error('Error:', error);
+          alert('حدث خطأ أثناء إرسال البلاغ.');
+      });
+  }
+</script>
 {% endblock %}

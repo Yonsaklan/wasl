@@ -32,18 +32,31 @@
                         <li><a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">عن وصل</a></li>
                     
                         {% if request.user.is_authenticated %}
-                            {% if request.user.owner %}
+                        <!-- إذا كان المستخدم مسجل دخوله -->
+                        <div class="dropdown">
+                            <button class="dropbtn" onclick="toggleDropdown()"> الاضافات</button>
+                            {% if user.is_authenticated and user.owner %}
+                            <div class="dropdown-content" id="myDropdown">
+                                <a href="{% url 'project' %}">مشاريعي  </a>
+                                <a href="{% url 'reservation' %}">اضافة مشروع </a>
+                                {% elif user.is_authenticated and user.investor %}
+                                <div class="dropdown-content" id="myDropdown">
+                                <a href="{% url 'prodesc' %}">استثماراتي  </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                                {% if request.user.owner %}
                                 <!-- لمالك المشروع -->
-                                <li><a href="{% url 'profile' %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">حسابي</a></li>
+                                <li><a href="{% url 'profile' %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">الملف الشخصي</a></li>
                                 <li><a href="{% url 'logout' %}">تسجيل خروج</a></li>
-                                <li><a href="{% url 'reservation' %}" class=" {% if request.resolver_match.url_name == 'reservation' %}active{% endif %} ">اضف مشروع</a></li>
-
-                            {% elif request.user.investor %}
+                                {% elif request.user.investor %}
                                 <!-- للمستثمر -->
-                                <li><a href="{% url 'profile' %}" class=" {% if request.resolver_match.url_name == 'profile' %}active{% endif %} "> حسابي</a></li>
-                                <li><a href="{% url 'deals' %}" class=" {% if request.resolver_match.url_name == 'deals' %}active{% endif %} ">استثمر</a></li>
+                                <li><a href="{% url 'profile' %}" class="{% if request.resolver_match.url_name == 'profile' %}active{% endif %}">الملف الشخصي</a></li>
+                                <li><a href="{% url 'deals' %}" class="{% if request.resolver_match.url_name == 'deals' %}active{% endif %}">الصفقات</a></li>
                                 <li><a href="{% url 'logout' %}">تسجيل خروج</a></li>
-                            {% endif %}
+                                {% endif %}
+                        
                         {% else %}
                             <!-- للمستخدمين غير المسجلين -->
                             <li><a href="{% url 'login' %}" class="{% if request.resolver_match.url_name == 'login' %}active{% endif %}">تسجيل دخول</a></li>
@@ -61,3 +74,69 @@
     </div>
   </header>
   <!-- ***** Header Area End ***** -->
+  <style>
+    /* تخصيص زر القائمة المنسدلة */
+/* تخصيص زر القائمة المنسدلة */
+.dropbtn {
+    background-color: #00a9d3;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* تخصيص الروابط داخل القائمة المنسدلة */
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    border-radius: 5px;
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+
+/* تحويل لون الخلفية عند التحويم */
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+/* تظهر القائمة المنسدلة عند تحديد فئة show */
+.show {
+    display: block;
+}
+
+
+  </style>
+  <script>
+    // تغيير الفئة لعرض/إخفاء القائمة المنسدلة
+// تغيير الفئة لعرض/إخفاء القائمة المنسدلة
+function toggleDropdown() {
+    document.getElementById("myDropdown").classList.toggle("show");
+}
+
+// إغلاق القائمة المنسدلة عند النقر خارجها
+window.onclick = function(event) {
+    if (!event.target.matches('.dropbtn')) {
+        var dropdowns = document.getElementsByClassName("dropdown-content");
+        for (var i = 0; i < dropdowns.length; i++) {
+            var openDropdown = dropdowns[i];
+            if (openDropdown.classList.contains('show')) {
+                openDropdown.classList.remove('show');
+            }
+        }
+    }
+}
+
+
+  </script>

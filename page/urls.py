@@ -1,5 +1,6 @@
 from . import views
 from django.urls import path
+from .views import project_detail, report_comment
 
 
 urlpatterns = [
@@ -18,4 +19,5 @@ urlpatterns = [
     path('<int:id>', views.edit, name='edit'),
     path('favorite', views.favorite, name='favorite'),
     path('project_detail/<int:project_id>/', views.project_detail, name='project_detail'),
+    path('report_comment/', views.report_comment, name='report_comment'),
 ]

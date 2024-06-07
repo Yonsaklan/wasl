@@ -1,24 +1,34 @@
 from django.contrib import admin
-from .models import Owner, ProjectCategory, Project, Photo
+from .models import Owner, ProjectCategory, Project, Photo, Message
+from django.utils.html import format_html
 
-admin.site.register(Owner)
+# التحقق مما إذا كان الموديل مسجلاً قبل محاولة إلغاء تسجيله
+if admin.site.is_registered(Owner):
+    admin.site.unregister(Owner)
+
+# إنشاء OwnerAdmin لعرض عدد المشاريع الخاصة بكل صاحب مشروع
+class OwnerAdmin(admin.ModelAdmin):
+    list_display = ('user', 'address', 'phone', 'date_of_birth', 'get_project_count')
+
+    def get_project_count(self, obj):
+        return Project.objects.filter(owner=obj).count()
+
+    get_project_count.short_description = 'عدد المشاريع'
+
+# إعادة تسجيل الموديل Owner مع إعدادات الإدارة الجديدة
+admin.site.register(Owner, OwnerAdmin)
+
+
+
+# تسجيل الموديلات الأخرى
 admin.site.register(ProjectCategory)
 admin.site.register(Project)
 admin.site.register(Photo)
 
-
-
-# from django.contrib import admin
-from django.contrib import admin
-from django.contrib.auth.models import AnonymousUser
-from .models import Message 
-from django.contrib import admin
-from .models import Message 
-from django.utils.html import format_html
-
+# إنشاء MessageAdmin لعرض المحادثات
 class MessageAdmin(admin.ModelAdmin):
-    list_display = ['name', 'display_conversation']  
-    list_display_links = ['name']  
+    list_display = ['name', 'display_conversation']
+    list_display_links = ['name']
 
     def display_conversation(self, obj):
         # احصل على جميع رسائل المستخدم مرتبة بترتيب الزمن

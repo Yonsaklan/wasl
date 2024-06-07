@@ -17,6 +17,12 @@ from .models import *
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+import json
+from The_Investor.models import InvestorRatingComment
+
 
 
 
@@ -42,11 +48,21 @@ def about(request):
     return render(request, 'pages/about.html')
 
 def deals(request):
+    
     projects = Project.objects.all()
     categories = ProjectCategory.objects.all()
     promo_requests = PromoRequest.objects.all()  # قم بتحميل طلبات الترويج
-   
-    return  render(request, 'pages/deals.html' , {'projects': projects, 'categories': categories, 'promo_requests': promo_requests})
+
+    for project in projects:
+        project.average_rating = project.average_rating()
+
+        context = {
+        'projects': projects,
+        'categories': categories,
+        'promo_requests': promo_requests
+    }
+
+    return  render(request, 'pages/deals.html' , context)
 
 # def reservation(request):
 #     if request.method == 'POST':
@@ -139,6 +155,30 @@ def project_detail(request, project_id):
     # حساب متوسط التقييم
     average_rating = project.investorratingcomment_set.aggregate(Avg('rating'))['rating__avg']
     return render(request, 'pages/project_detail.html', {'project': project, 'average_rating': average_rating})
+
+
+def report_comment(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            comment_id = data.get('comment_id')
+            comment = get_object_or_404(InvestorRatingComment, id=comment_id)
+
+            # تسجيل البلاغ في قاعدة البيانات
+            report = Report.objects.create(
+                comment=comment,
+                reporter=request.user,
+                reason="الإبلاغ عن تعليق غير لائق."
+            )
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+
+
+
+
 
 def condations(request):
     return render(request, 'pages/condations.html')
