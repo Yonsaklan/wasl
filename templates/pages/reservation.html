@@ -63,6 +63,7 @@ reservation
       <div class="col-lg-12">
         <form id="reservation-form" name="gs" method="POST" enctype="multipart/form-data">
            {% csrf_token %}
+           {% include 'parts/_alerts.html' %}
 
            <div class="row">
             <div class="col-lg-12"  id="dod">
@@ -76,13 +77,16 @@ reservation
               <h5> 4 : بعد ارفاق بيانات المشروع تكون قد انتهيت من رفع المشروع ويتبقى عليك انتظار رسالة منا في حالة ودجود مستثمرين  </h5>
               <br>
             </div>
+            
             {{ form.as_p }}
+            
             <div class="col-lg-12">                        
               <fieldset>
                 <button type="submit" class="main-button">أرسال</button>
               </fieldset>
             </div>
           </div>
+          
           
 
           <!-- <div class="row">
@@ -159,6 +163,11 @@ label {
 /* تنسيق الزر عند التحويل إلى الحالة النشطة (عند الضغط) */
 .main-button:active {
   background-color: #45a049;
+}
+
+select option[value=""][selected] {
+    color: #22b3c1;
+    text-align: center;    
 }
 
 </style>

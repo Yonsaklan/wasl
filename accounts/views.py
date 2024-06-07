@@ -217,7 +217,6 @@ def profile(request):
                 and request.POST['address']
                 and request.POST['email']
                 and request.POST['user']
-                and request.POST['pass']
             ):
                 request.user.first_name = request.POST['fname']
                 request.user.last_name = request.POST['lname']
@@ -229,9 +228,6 @@ def profile(request):
 
                 request.user.email = request.POST['email']
                 request.user.username = request.POST['user']
-
-                if not request.POST['pass'].startswith('pbkdf2_sha256$'):
-                    request.user.set_password(request.POST['pass'])
 
                 request.user.save()
 
@@ -259,9 +255,18 @@ def profile(request):
                     'address': user_owner.address if user_owner else (user_investor.address if user_investor else ''),
                     'email': request.user.email,
                     'user': request.user.username,
-                    'pass': request.user.password
                 }
 
             return render(request, 'accounts/profile.html', context)
         else:
             return redirect('profile')
+
+
+
+
+def owner_method(request):
+    return render(request, 'accounts/owner_method.html')
+
+
+def inv_method(request):
+    return render(request, 'accounts/inv_method.html')

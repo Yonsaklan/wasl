@@ -133,20 +133,16 @@
       
         <!-- الديف الرئيسي -->
         <div class="main-container">
-          {% if request.user.owner %}
           <!-- القطعة الأولى -->
           <div class="info-blockk">
-            <div class="info-text">قدم طلبك للحصول على استثمار
-              هل تبحث عن تمويل يساعد بنمو شركتك ويحقق أهدافك  </div>
-            <a href="{% url 'reservation' %}" class="info-linkk">ارفع مشروع  </a>
+            <div class="info-text">لمعرفة كل ما هو متعلق برفع المشاريع والترويج ، انتقل الى الصفحة التالية</div>
+            <a href="{% url 'owner_method' %}" class="info-linkk">مساعدة مالك المشروع</a>
           </div>
-          {% elif request.user.investor %}
           <!-- القطعة الثانية -->
           <div class="info-blockk">
-            <div class="info-text"> قم بااستكشاف افضل واخر الفرص الاستثمارية المتاحة وكن جزءًا من إحدى الشركات الواعدة</div>
-            <a href="/explore_opportunities" class="info-linkk"> استثمر</a>
+            <div class="info-text"> لمعرفة كل ما هو متعلق بالاستثمار في المشاريع انتقل الى الصفحة التالية</div>
+            <a href="{% url 'inv_method' %}" class="info-linkk"> مساعدة المستثمر</a>
           </div>
-          {% endif %}
         </div>
      
        
@@ -202,9 +198,9 @@
             <div class="row">
                 <div class="col-lg-6">
                     {% if project.image %}
-                    <div class="image" style="background-image: url('{{ project.image.url }}');  "></div>
+                    <div class="image" style="background-image: url('{{ project.image.url }}');"><div class="project-status">{{ project.status }}</div></div>
                     {% else %}
-                    <div class="image" style="background-color: #881782; height: 100%;"></div>
+                    <div class="image" style="background-color: #881782; height: 100%;"><div class="project-status">{{ project.status }}</div></div>
                     {% endif %}
                 </div>
                 <div class="col-lg-6 align-self-center">
@@ -234,12 +230,11 @@
                           <span class="list">وصف المشروع</span>
                        
                           {{ project.discripe|safe }}
-                      </p>
-                      
-                       
-        
+                      </p>                         
                         <div class="main-button1" >
+                          {% if request.user.investor %}
                           <a href="{% url 'invreq' project.id %}">الاستثمار في المشروع</a>
+                          {% endif %}
                           <a href="{% url 'project_detail' project.id %}">  تعليقات حول المشروع</a>
                         </div>
                         
@@ -532,7 +527,7 @@ document.getElementById('new-filter-form').addEventListener('submit', function (
     border-radius: 10px;
     width: 300px;
     /* عرض القطعة */
-    height: 250px;
+    
     /* ارتفاع القطعة */
     background-color: #f7f7f7;
     display: flex;
@@ -692,6 +687,16 @@ document.getElementById('new-filter-form').addEventListener('submit', function (
     position: relative;
     overflow: hidden;
 }
+
+.project-status {
+  position: absolute;
+  background-color: #22b3c1;
+  padding: 7px;
+  border-top-right-radius: 10px ;
+  border-bottom-right-radius: 10px;
+
+}
+
   </style>   
   
 {% endblock %}
