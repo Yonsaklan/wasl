@@ -31,6 +31,8 @@
                         <li><a href="{% url 'index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}"> الرئيسية</a></li>
                         <li><a href="{% url 'about' %}" class="{% if request.resolver_match.url_name == 'about' %}active{% endif %}">عن وصل</a></li>
                     
+                        <!--من هنا-->
+
                         {% if request.user.is_authenticated %}
                         <!-- إذا كان المستخدم مسجل دخوله -->
                         <div class="dropdown">
@@ -66,7 +68,7 @@
                     <a class='menu-trigger'>
                         <span>Menu</span>
                     </a>
-                    <!-- ***** Menu End ***** -->
+                    <!-- ***** هنا الى ***** -->
                 </nav>
             </div>
             
