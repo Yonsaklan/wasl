@@ -206,31 +206,8 @@ project
                     <div class="col-12">
                       <i class="fa fa-map" style="font-size: 20px;"></i>
                       <span class="list" style="font-size: 20px;">موقع المشروع: {{ project.details }}</span>
-        <div class="col-lg-6 col-sm-6" style=" background-color: #ddd6d6; margin-bottom: 20px;">
-          <div class="card h-100" style="margin-bottom: 20px;">
-            <div class="row" style="padding: 10px;">
-              <div class="col-lg-6">
-                {% if project.image %}
-                <div class="image" style="background-image: url('{{ project.image.url }}'); background-size: cover; background-position: center center; height: 300px;"></div>
-                {% endif %}
-              </div>
-              <div class="col-lg-6 align-self-center">
-                <div class="content" style="direction: rtl; padding-bottom: 5%;">
-                  <span class="info" style="color: #0094f7; font-size: 20px;">اسم المشروع: {{ project.title }}</span>
-                  <h4 style="padding-top: 10%; font-size: 20px;">سعر المشروع: {{ project.cost }}</h4>
-                  <div class="row" style="color: #0077ff;">
-                    <div class="col-12">
-                      <i class="fa fa-clock" style="font-size: 20px;"></i>
-                      <span class="list" style="font-size: 20px;">وصف المشروع: {{ project.category }}</span>
                     </div>
-                    <div class="col-12">
-                      <i class="fa fa-map" style="font-size: 20px;"></i>
-                      <span class="list" style="font-size: 20px;">عنوان المشروع: {{ project.address }}</span>
-                    </div>
-                    <div class="col-12">
-                      <i class="fa fa-map" style="font-size: 20px;"></i>
-                      <span class="list" style="font-size: 20px;">موقع المشروع: {{ project.details }}</span>
-                    </div>
+        
                   </div>
                   <p style="font-size: 16px; padding-top: 20px;">معلومات المشروع: {{ project.discripe }}</p>
                   <div class="main-button" style="padding-top: 20px;">

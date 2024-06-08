@@ -48,20 +48,11 @@
                             </div>
                         </div>
                         
+                        
                                 {% if request.user.owner %}
                         <!-- إذا كان المستخدم مسجل دخوله -->
-                        <div class="dropdown">
-                            <button class="dropbtn" onclick="toggleDropdown()"> الاضافات</button>
-                            {% if user.is_authenticated and user.owner %}
-                            <div class="dropdown-content" id="myDropdown">
-                                <a href="{% url 'project' %}">مشاريعي  </a>
-                                <a href="{% url 'reservation' %}">اضافة مشروع </a>
-                                {% elif user.is_authenticated and user.investor %}
-                                <div class="dropdown-content" id="myDropdown">
-                                <a href="{% url 'prodesc' %}">استثماراتي  </a>
-                                {% endif %}
-                            </div>
-                        </div>
+                        
+                        {% endif %}
                         
                                 {% if request.user.owner %}
                                 <!-- لمالك المشروع -->
