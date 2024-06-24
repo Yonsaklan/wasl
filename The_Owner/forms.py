@@ -1,14 +1,15 @@
 from django import forms
-from .models import Project
+from .models import *
 
 
 
 class ProjectForm(forms.ModelForm):
     class Meta:
         model = Project 
-        fields = ['category', 'title', 'discripe', 'cost', 'details', 'address', 'image']
+        fields = ['category', 'status' , 'title', 'discripe', 'cost', 'details', 'address', 'image']
         labels = {
             'category': 'تصنيف المشروع',
+            'status': 'حالة المشروع',
             'title': 'اسم المشروع',
             'discripe': 'وصف المشروع',
             'cost': 'تكلفة المشروع',
@@ -28,6 +29,25 @@ class ProjectForm(forms.ModelForm):
         if user:
             self.fields['owner'].initial = user.owner.id  # تحديد قيمة حقل المالك بمعرف المالك للمستخدم الحالي
             self.fields['owner'].widget.attrs['readonly'] = True  # جعل حقل المالك لا يقبل التعديل
+
+
+            self.fields['category'].required = True
+            self.fields['status'].required = True
+            self.fields['title'].required = True
+            self.fields['discripe'].required = True
+            self.fields['cost'].required = True
+            self.fields['details'].required = True
+            self.fields['address'].required = True
+            self.fields['image'].required = True
+
+            self.fields['category'].empty_label = 'يجب إختيار تصنيف مشروعك'
+            self.fields['category'].widget.attrs['class'] = 'custom-empty'  # تحديد الكلاس الخاص بـ empty_label
+            self.fields['category'].widget.attrs['style'] = 'color: black;'  # لون الخيارات العادية
+
+            self.fields['status'].empty_label = 'يجب تحديد حالة مشروعك'
+            self.fields['status'].widget.attrs['class'] = 'custom-empty'  # تحديد الكلاس الخاص بـ empty_label
+            self.fields['status'].widget.attrs['style'] = 'color: black;'  # لون الخيارات العادية
+
 
 ########################
 

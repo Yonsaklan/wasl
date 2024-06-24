@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Investor , Favorite , InvestmentRequest, InvestorRatingComment
+from .models import Investor , Favorite , InvestmentRequest, InvestorRatingComment, Report
 from .models import Investor, Project
 from django.db import models
 from datetime import datetime
@@ -37,4 +37,5 @@ admin.site.register(Project)
 admin.site.register(Favorite)
 admin.site.register(InvestmentRequest, InvestmentRequestAdmin)
 admin.site.register(InvestorRatingComment)
+admin.site.register(Report)
 

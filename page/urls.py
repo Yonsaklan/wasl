@@ -4,11 +4,13 @@ from .views import feasibility_study, confirmation_page
 from page.views import feasibility_study
 from .views import services
 from .views import chat_list, send_message
+from .views import project_detail, report_comment
 
 
 
 urlpatterns = [
     path('', views.index, name='index'),
+    path('index', views.index, name='index'),
     path('about', views.about, name='about'), 
     path('deals', views.deals, name='deals'), 
     path('reservation', views.reservation, name='reservation'), 
@@ -29,6 +31,9 @@ urlpatterns = [
     path('services', views.services, name='services'),
     path('chat/<int:feasibility_study_id>/', chat_list, name='chat_list'),
     path('chat/<int:feasibility_study_id>/send/', send_message, name='send_message'),
+    path('project_detail/<int:project_id>/', views.project_detail, name='project_detail'),
+    path('report_comment/', views.report_comment, name='report_comment'),
+    
 
 ]
 

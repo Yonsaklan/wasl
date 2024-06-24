@@ -215,7 +215,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'en'
 TIME_ZONE = 'Asia/Aden'
 USE_TZ = True
 USE_I18N = True
@@ -278,9 +278,15 @@ MESSAGE_TAGS = {
 # EMAIL_USE_SSL = False
 
 
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'localhost'
+# EMAIL_PORT = 1025
+
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'localhost'
-EMAIL_PORT = 1025
-
-
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'bkralmrysy12@gmail.com'
+EMAIL_HOST_PASSWORD ='dsgg peya ihwl cjkd'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FORM_EMAIL = 'WASL Team <wasl@wasl.com>'
 

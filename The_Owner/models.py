@@ -30,6 +30,14 @@ class ProjectCategory(models.Model):
     def __str__(self):
         return self.category
 
+##############################projectstatus##################################################
+
+
+class ProjectStatus(models.Model):
+    name = models.CharField(max_length=50)
+
+    def __str__(self):
+        return self.name
 
 ##############################Project##################################################
 
@@ -38,6 +46,7 @@ class ProjectCategory(models.Model):
 class Project(models.Model):
     owner = models.ForeignKey(Owner, on_delete=models.CASCADE, null=True, blank=True)
     category = models.ForeignKey(ProjectCategory, on_delete=models.CASCADE, null=True, blank=True)
+    status = models.ForeignKey(ProjectStatus, on_delete=models.CASCADE, null=True, blank=True)
     title = models.CharField(max_length=100)
     discripe = models.TextField(max_length=180)
     cost = models.DecimalField(max_digits=5, decimal_places=2)

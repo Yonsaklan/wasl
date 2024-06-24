@@ -36,8 +36,6 @@ class Favorite(models.Model):
     
     def __str__(self):
         return f"investor: {self.investor}"
-    
-
 class InvestmentRequest(models.Model):
     date = models.DateTimeField(default=datetime.now)
     investor = models.ForeignKey(Investor, on_delete=models.CASCADE, null=True, blank=True)
@@ -45,28 +43,38 @@ class InvestmentRequest(models.Model):
     payer_name = models.CharField(max_length=100, null=True, blank=True)
     image = models.ImageField(upload_to='pay_images/%Y/%m/%d/', null=True, blank=True)
     is_allowed = models.BooleanField(default=False)
-    investor_identifier = models.CharField(max_length=100, null=True, blank=True)  
-   
+    is_project_rated = models.BooleanField(default=False)  # تعديل هنا
+
+
     def __str__(self):
         return f'request of {self.payer_name}'
-    
-from django.db import models, IntegrityError
+
 
 
 from django.core.validators import MinValueValidator, MaxValueValidator
 
-
 class InvestorRatingComment(models.Model):
     investor = models.ForeignKey(Investor, on_delete=models.CASCADE)
     project = models.ForeignKey(Project, on_delete=models.CASCADE)
-    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(10)]) # نطاق من 1 إلى 10
+    rating = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)]) # نطاق من 1 إلى 10
     comment = models.TextField()
+    comment = models.TextField()
+
 
     class Meta:
         unique_together = ('investor', 'project')  # للسماح بتقييم المشروع مرة واحدة فقط
 
     def __str__(self):
         return f'تقييم المستثمر: {self.investor}, المشروع: {self.project}'
-                                   
+
     # def __str__(self):
     #     return f'Profile of {self.user.username}'
+
+class Report(models.Model):
+    comment = models.ForeignKey(InvestorRatingComment, on_delete=models.CASCADE)
+    reporter = models.ForeignKey(User, on_delete=models.CASCADE)
+    reason = models.TextField(blank=True, null=True)
+    date_reported = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Report by {self.reporter.username} on {self.comment.id}'

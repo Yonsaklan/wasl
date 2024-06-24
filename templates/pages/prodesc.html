@@ -96,16 +96,17 @@ reservation
                                         </p>
                                         <p style="font-size: 14px; margin-bottom: 0;">
                                             <strong style="color: #555;">البريد الإلكتروني:</strong> 
-                                            <a href="mailto:{{ investment_request.project.owner.email }}" style="color: #007bff; text-decoration: none;">{{ investment_request.project.owner.email }}</a>
+                                            <a href="mailto:{{ investment_request.project.owner.user.email }}" style="color: #007bff; text-decoration: none;">{{ investment_request.project.owner.user.email }}</a>
                                         </p>
                                     </div>
                                     
                                     <form method="POST" action="{% url 'prodesc' %}">
                                         {% csrf_token %}
                                         <input type="hidden" name="project_id" value="{{ investment_request.project.id }}">
+                                        <input type="hidden" name="investment_request_id" value="{{ investment_request.id }}">
                                         <div style="margin-bottom: 10px;">
                                             <label for="rating" style="font-weight: bold;">التقييم:</label><br>
-                                            <input type="number" id="rating" name="rating" min="1" max="5" required style="padding: 5px; width: 50px;" {% if investment_request.project.id in rated_projects %}disabled{% endif %}>
+                                            <input type="number" id="rating" name="rating" min="1" max="5" required style="padding: 5px; width: 50px;" {% if investment_request.is_project_rated %}disabled{% endif %}>
                                         </div>
                                         <div style="margin-bottom: 10px;">
                                             <label for="comment" style="font-weight: bold;">التعليق:</label><br>
@@ -115,6 +116,9 @@ reservation
                                             <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: #fff; border: none; border-radius: 5px; cursor: pointer;">حفظ</button>
                                         </div>
                                     </form>
+                                
+
+                                    
                                 </div>
                             </div>
                         </div>

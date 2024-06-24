@@ -29,9 +29,12 @@ from django.db.models import Avg
 from The_Owner.models import Project, ProjectCategory
 from The_Investor.models import Investor, Owner
 from FM.models import PromoRequest
+from django.shortcuts import render
+from django.db.models import Avg
 
 def index(request):
-    projects = Project.objects.all()
+    # جلب المشاريع مع حساب متوسط التقييم لكل مشروع
+    projects = Project.objects.annotate(average_rating=Avg('investorratingcomment__rating')).order_by('-average_rating')[:6]
     categories = ProjectCategory.objects.all()
     promo_requests = PromoRequest.objects.filter(active=True)
 
@@ -45,11 +48,8 @@ def index(request):
     total_investor = Investor.objects.count()
     total_owners = Owner.objects.count()
     total_investmentrequest = InvestmentRequest.objects.filter(is_allowed=True).count()
-   
-    # حساب متوسط التقييم لكل مشروع
-    for project in projects:
-        project.average_rating = project.investorratingcomment_set.aggregate(Avg('rating'))['rating__avg']
 
+    # تحديث طول العنوان لطلبات الترويج
     for promo_request in promo_requests:
         promo_request.title_length = len(promo_request.project.title)
 
@@ -59,22 +59,36 @@ def index(request):
         'promo_requests': promo_requests,
         'total_projects': total_projects,
         'total_investor': total_investor,
-        'total_owners': total_owners
+        'total_owners': total_owners,
+        'total_investmentrequest': total_investmentrequest,
     })
+
+
+
 
 
 def about(request):
     return render(request, 'pages/about.html')
 
+
 def deals(request):
+    
     projects = Project.objects.all()
     categories = ProjectCategory.objects.all()
-   
-    return render(request, 'pages/deals.html', {
+    promo_requests = PromoRequest.objects.all()  # قم بتحميل طلبات الترويج
+
+    for project in projects:
+        project.average_rating = project.investorratingcomment_set.aggregate(Avg('rating'))['rating__avg']
+
+
+        context = {
         'projects': projects,
         'categories': categories,
-       
-    })
+        'promo_requests': promo_requests
+    }
+        
+
+    return  render(request, 'pages/deals.html' , context)
 # def reservation(request):
 #     if request.method == 'POST':
 #         add_project =ProjectForm(request.POST, request.FILES)
@@ -115,6 +129,7 @@ def reservation(request):
             project_instance = add_project.save(commit=False)
             project_instance.owner = request.user.owner  # تحديد الـ owner تلقائيًا
             project_instance.save()
+            messages.success(request, 'تم اضافة مشروعك')
 
     # جلب جميع المشاريع من قاعدة البيانات
     projects = Project.objects.all()
@@ -149,30 +164,54 @@ def vir(request):
 
 def addpost(request):
     return render(request, 'pages/addpost.html')
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+import json
+from The_Investor.models import InvestorRatingComment
 from django.db.models import Avg
+from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import Avg
+from The_Investor.models import Project, Favorite
+from The_Investor.forms import RatingCommentForm
+from django.http import HttpResponse
 
-def project_detail(request, project_id,):
-    investor = request.user.investor
+def project_detail(request, project_id):
     project = get_object_or_404(Project, id=project_id)
-    if request.method == 'POST':
-        investor = request.user.investor
-        project = get_object_or_404(Project, id=project_id)
-    
     if request.method == 'POST':
         investor_id = request.POST.get('investor')
         project_id = request.POST.get('project')
-
         if investor_id and project_id:
             investor = Investor.objects.get(id=investor_id)
             project = Project.objects.get(id=project_id)
             Favorite.objects.get_or_create(investor=investor, project=project)
             return redirect('favorite')
-   
 
     # حساب متوسط التقييم
     average_rating = project.investorratingcomment_set.aggregate(Avg('rating'))['rating__avg']   
     
     return render(request, 'pages/project_detail.html', {'project': project, 'average_rating': average_rating, 'status': 'failed'}, status=400)
+
+
+def report_comment(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            comment_id = data.get('comment_id')
+            comment = get_object_or_404(InvestorRatingComment, id=comment_id)
+
+            # تسجيل البلاغ في قاعدة البيانات
+            report = Report.objects.create(
+                comment=comment,
+                reporter=request.user,
+                reason="الإبلاغ عن تعليق غير لائق."
+            )
+
+            return JsonResponse({'success': True})
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)})
+    return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+
+
 
 def condations(request):
     return render(request, 'pages/condations.html')
@@ -253,7 +292,7 @@ from The_Owner.forms import MessageForm
 
 
 
-@login_required
+
 def twsl(request):
     user_messages = None
 
@@ -264,11 +303,10 @@ def twsl(request):
             if request.user.is_authenticated:
                 message_instance.name = request.user
             message_instance.save()
-            return redirect('twsl')  # بعد إرسال الرسالة بنجاح، قم بتوجيه المستخدم مباشرة إلى صفحة twsl
+            return redirect('twsl')  
 
     if request.user.is_authenticated:
         user_messages = Message.objects.filter(name=request.user)
-        # تحديد جميع الرسائل غير المقروءة وتحديثها عند عرض صفحة الرسائل
         unread_messages = user_messages.filter(is_read=False)
         unread_messages.update(is_read=True)
 
@@ -278,23 +316,6 @@ def twsl(request):
     }
 
     return render(request, 'pages/twsl.html', context)
-
-# ######تحديث صفحة المراسلة :-
-
-# @login_required
-# def update_messages(request):
-#     if request.method == 'GET' and request.user.is_authenticated:
-#         # احصل على الرسائل الجديدة من قاعدة البيانات
-#         user_messages = Message.objects.filter(name=request.user)
-#         unread_messages = user_messages.filter(is_read=False)
-#         unread_messages.update(is_read=True)
-
-#         # إرجاع الرد بنجاح
-#         return JsonResponse({'success': True})
-#     else:
-#         # في حالة عدم توفر صلاحيات أو طلب غير صحيح
-#         return JsonResponse({'success': False}, status=400)
-
 
 
     
@@ -306,96 +327,68 @@ from The_Investor.models import InvestmentRequest, InvestorRatingComment
 from django.shortcuts import get_object_or_404
 from The_Investor.models import InvestorRatingComment
 
-# @login_required
-# def prodesc(request):
-#     investor = request.user.investor
-
-#     if request.method == 'POST':
-#         form = RatingCommentForm(request.POST)
-#         if form.is_valid():
-#             rating_comment = form.save(commit=False)
-#             rating_comment.investor = investor
-#             project_id = request.POST.get('project_id')
-#             investment_request = InvestmentRequest.objects.get(project_id=project_id, investor=investor)
-#             rating_comment.project = investment_request.project
-#             rating_comment.save()
-#             return redirect('prodesc')
-#     else:
-#         form = RatingCommentForm()
-
-#     investment_requests = InvestmentRequest.objects.filter(investor=investor)
-
-#     return render(request, 'pages/prodesc.html', {'investment_requests': investment_requests, 'form': form}) هذا رقم واحد والي تحته اثنين
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import login_required
+from The_Investor.forms import RatingCommentForm
+from The_Investor.models import InvestmentRequest, InvestorRatingComment
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
+from The_Investor.models import InvestmentRequest, Project, Favorite
+from The_Investor.forms import RatingCommentForm
 
 @login_required
 def prodesc(request):
-    print("Entered prodesc view")
-    try:  
-        if not request.user.is_authenticated:
-           messages.error(request, 'يرجى تسجيل الدخول للوصول إلى هذه الصفحة.')
-           print("User not authenticated")
-           return redirect('login')
+    investor = request.user.investor
 
-        investor = request.user.investor
-        print("Investor retrieved:", investor)
+    if request.method == 'POST':
+        form = RatingCommentForm(request.POST)
+        if form.is_valid():
+            project_id = request.POST.get('project_id')
+            investment_request_id = request.POST.get('investment_request_id')
+            investment_request = InvestmentRequest.objects.get(id=investment_request_id)
 
-        if hasattr(investor, 'owner') and investor.owner:
-           messages.error(request, 'ليس لديك صلاحية الوصول إلى هذه الصفحة.')
-           print("Investor is an owner")
-           return redirect('index')
-
-
-        if request.method == 'POST':
-            form = RatingCommentForm(request.POST)
-            if form.is_valid():
-                rating_comment = form.save(commit=False)
-                rating_comment.investor = investor
-                project_id = request.POST.get('project_id')
-                investment_request = InvestmentRequest.objects.get(project_id=project_id, investor=investor)
-                rating_comment.project = investment_request.project
-
-                try:
-                    rating_comment.save()
-                except IntegrityError:
-                    # يمكن هنا إضافة رسالة للمستخدم توضح أنه قد قام بتقييم هذا المشروع مسبقاً
-                    form.add_error(None, "لقد قمت بتقييم هذا المشروع مسبقاً.")
-                    return redirect('prodesc')
-
+            # التحقق ما إذا كان المشروع قد تم تقييمه بالفعل
+            if investment_request.is_project_rated:
+                form.add_error(None, "لقد قمت بتقييم هذا المشروع مسبقاً.")
                 return redirect('prodesc')
-        else:
-            form = RatingCommentForm()
 
-        investment_requests = InvestmentRequest.objects.filter(investor=investor)
-        rated_projects = InvestorRatingComment.objects.filter(investor=investor).values_list('project_id', flat=True)
+            rating_comment = form.save(commit=False)
+            rating_comment.investor = investor
+            rating_comment.project = investment_request.project
 
-        context = {
-            'investment_requests': investment_requests,
-            'form': form,
-            'rated_projects': rated_projects
-        }
-        
-        if request.method == 'POST':
-            projectid = request.POST.get('project')
-            investorid = request.POST.get('investor')
+            try:
+                rating_comment.save()
+            except IntegrityError:
+                form.add_error(None, "حدثت مشكلة أثناء حفظ التعليق.")
+                return redirect('prodesc')
 
-            project = Project.objects.get(id = projectid)
-            investor =  Investor.objects.get(id = investorid)
+            investment_request.is_project_rated = True
+            investment_request.save()
 
+            return redirect('prodesc')
 
-            Favorite.objects.get_or_create(investor=investor , project=project)
+        elif 'project' in request.POST and 'investor' in request.POST:
+            project_id = request.POST.get('project')
+            investor_id = request.POST.get('investor')
+
+            project = Project.objects.get(id=project_id)
+            investor = Investor.objects.get(id=investor_id)
+
+            Favorite.objects.get_or_create(investor=investor, project=project)
             return redirect('favorite')
-        
-    
-        project = Project.objects.all()
-        investment_request = InvestmentRequest.objects.all()
+
+    else:
+        form = RatingCommentForm()
+
+    investment_requests = InvestmentRequest.objects.filter(investor=investor)
+    context = {
+        'investment_requests': investment_requests,
+        'form': form,
+    }
+    return render(request, 'pages/prodesc.html', context)
 
 
-        return render(request, 'pages/prodesc.html', context)
-    
-    except AttributeError:
-        messages.error(request, ' prodesc لاتوجد لك صلاحية بالدخول الى صفحة')
-        print("AttributeError: No access rights")
-        return redirect('index')  # أو أي صفحة أخرى تريد إعادة التوجيه إليها
 
 from django.contrib.auth.models import User
 
@@ -406,38 +399,50 @@ def favorite(request):
         try:
             current_investor = Investor.objects.get(user=request.user)
         except Investor.DoesNotExist:
-            # تعامل مع الحالة حيث لا يوجد مستثمر مرتبط بالمستخدم الحالي
+
             return render(request, 'error.html', {'message': 'Investor does not exist'})
 
         favorite = get_object_or_404(Favorite, investor=current_investor, project_id=project_id)
         favorite.delete()
         return redirect('favorite')
-    # التأكد من تسجيل الدخول
+
     if request.user.is_authenticated:
-        # استعلام للحصول على المستثمر الحالي
+        
         current_investor = Investor.objects.get(user=request.user)
-        # استعلام للحصول على المفضلات الخاصة بالمستثمر الحالي فقط
+       
         favorite = Favorite.objects.filter(investor=current_investor)
-        # إرجاع الاستجابة مع قائمة المفضلات
+       
         return render(request, 'pages/favorite.html', {'favorite': favorite})
     else:
-        # إذا لم يكن المستخدم مسجل الدخول، يتم توجيهه إلى صفحة تسجيل الدخول أو أي صفحة أخرى حسب التصميم الخاص بك
+        
         return redirect('login')
 from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from Chat.forms import FeasibilityStudyRequestForm 
+from The_Owner.models import *
+from The_Investor.models import *
 
 def feasibility_study(request):
+    if not request.user.is_authenticated:
+        return redirect('login')  
+
+    user_is_investor = Investor.objects.filter(user=request.user).exists()
+    user_is_owner = Owner.objects.filter(user=request.user).exists()
+
+    if not (user_is_investor or user_is_owner):
+        return redirect('some_other_page')
+
     if request.method == 'POST':
         form = FeasibilityStudyRequestForm(request.POST, request.FILES)
         if form.is_valid():
             request_instance = form.save(commit=False)
             request_instance.user = request.user
             request_instance.save()
-            return redirect('confirmation_page')  # تأكد من وجود صفحة تأكيد
+            return redirect('confirmation_page')  
     else:
         form = FeasibilityStudyRequestForm()
     return render(request, 'pages/feasibility_study.html', {'form': form})
-
 
 
 def confirmation_page(request):

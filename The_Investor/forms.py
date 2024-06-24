@@ -50,6 +50,33 @@ from The_Investor.models import InvestorRatingComment
 #             'comment': 'التعليق',
 #         }الاخير
 
+# class RatingCommentForm(forms.ModelForm):
+#     class Meta:
+#         model = InvestorRatingComment
+#         fields = ['rating', 'comment']
+#         labels = {
+#             'rating': 'التقييم',
+#             'comment': 'التعليق',
+#         }
+#         widgets = {
+#             'rating': forms.NumberInput(attrs={'min': '1', 'max': '10'}), # نطاق من 1 إلى 10 في الفورم
+#         }
+
+# class RatingCommentForm(forms.ModelForm):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.fields['rating'].disabled = True  # تعطيل حقل التقييم بشكل افتراضي
+
+#     class Meta:
+#         model = InvestorRatingComment
+#         fields = ['rating', 'comment']
+#         labels = {
+#             'rating': 'التقييم',
+#             'comment': 'التعليق',
+#         }
+from django import forms
+from .models import InvestorRatingComment
+
 class RatingCommentForm(forms.ModelForm):
     class Meta:
         model = InvestorRatingComment
@@ -58,6 +85,4 @@ class RatingCommentForm(forms.ModelForm):
             'rating': 'التقييم',
             'comment': 'التعليق',
         }
-        widgets = {
-            'rating': forms.NumberInput(attrs={'min': '1', 'max': '5'}), # نطاق من 1 إلى 10 في الفورم
-        }
+

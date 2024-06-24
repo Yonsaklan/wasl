@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+<!-- {% extends 'base.html' %}
 {% load static %}
 {% block content %}
 
@@ -138,19 +138,16 @@
     
         <div class="image-box">
             <div class="main-container-image">
-                <!-- هنا يمكنك إضافة الصور أو أي محتوى آخر -->
             </div>
         </div>
     </div>
     
       
     <div class="main-container">
-      {% if request.user.owner %}
       <!-- القطعة الأولى -->
       <div class="info-blockk">
-        <div class="info-text">قدم طلبك للحصول على استثمار
-          هل تبحث عن تمويل يساعد بنمو شركتك ويحقق أهدافك</div>
-        <a href="{% url 'reservation' %}" class="info-linkk">ارفع مشروع</a>
+        <div class="info-text">لمعرفة كل ما هو متعلق برفع المشاريع والترويج ، انتقل الى الصفحة التالية</div>
+        <a href="{% url 'owner_method' %}" class="info-linkk">مساعدة مالك المشروع</a>
       </div>
     
  <!-- القطعة الثالثة -->
@@ -162,111 +159,72 @@
 
       <!-- القطعة الثانية -->
       <div class="info-blockk">
-        <div class="info-text">قم بااستكشاف افضل &nbsp; و &nbsp; اخر الفرص الاستثمارية المتاحة و كن جزءًا&nbsp; من &nbsp;إحدى الشركات الواعدة</div>
-        <a href="{% url 'deals' %}" class="info-linkk">استثمر</a>
+        <div class="info-text"> لمعرفة كل ما هو متعلق بالاستثمار في المشاريع انتقل الى الصفحة التالية</div>
+        <a href="{% url 'inv_method' %}" class="info-linkk"> مساعدة المستثمر</a>
       </div>
     
-     
     </div>
-    
-
-<div class="search-form">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-12">
-        <form id="new-filter-form" method="get" style="direction: rtl;">
-          <div class="row">
-            <div class="col-lg-2">
-              <h4 style="color: #000000;">عرض بواسطة:</h4>
-            </div>
-            <div class="col-lg-4">
-              <select name="category" class="form-select" aria-label="Default select example" id="categories">
-                <option selected>التصنيف</option>
-
-                <option value="all" style=" text-align:center;">الكل</option>
-                {% for category in categories %}
-                  <option value="{{ category.category }}">{{ category.category }}</option>
-                {% endfor %}
-              </select>
-            </div>
-            <div class="col-lg-4">
-              <fieldset>
-                <select name="category" class="form-select" aria-label="Default select example" id="categories">
-                  <option selected> التكلفة</option>
-                  <option value="all" style=" text-align:center;">الكل</option>
-                  {% for project in projects %}
-                  <option value="{{ project.cost }}">{{ project.cost }}</option>
-                {% endfor %}
-                      
-                  </select>
-              </fieldset>
-          </div>
-
-            <div class="col-lg-2">
-              <button type="submit" class="btn btn-primary">عرض</button>
-            </div>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
-  
-</div>
-
-
-<div class="container">
-  <div class="row">
-    {% for project in projects %}
-    <div class="col-lg-6 project-item" id="project{{ project.id }}" data-category="{% if project.category %}{{ project.category.category }}{% else %}none{% endif %}">
-        <!-- تفاصيل المشروع -->
-        <div class="item">
-          <div class="row">
-            <div class="col-lg-6 col-md-12">
-              {% if project.image %}
-              <div class="project-image" style="background-image: url('{{ project.image.url }}');"></div>
-              {% else %}
-              <div class="project-image" style="background-image: url('{% static 'assets/images/default-image.jpeg' %}');"></div>
-              {% endif %}
-            </div>
-            <div class="col-lg-6 col-md-12 align-self-center">
-              <div class="content">
-                <span class="info">اسم المشروع: {{ project.title }} &nbsp;&nbsp; التقييم: {{ project.average_rating }}</span>
-                <h4>التكلفة المقدرة: {{ project.cost }}</h4>
-                <div class="row">
-                  <div class="col-6">
-                    <i class="fa fa-clock"></i>
-                    <span class="list">تصنيف المشروع</span>
-                    <div class="value" style="text-align: center; font-size: large;">{{ project.category }}</div>
+    <div class="container">
+      <div class="row">
+        {% for project in projects %}
+        <div class="col-lg-6 project-item" id="project{{ project.id }}" data-category="{% if project.category %}{{ project.category.category }}{% else %}none{% endif %}">
+            <!-- تفاصيل المشروع -->
+            <div class="item">
+              <div class="row">
+                <div class="col-lg-6 col-md-12">
+                  {% if project.image %}
+                  <div class="image" style="background-image: url('{{ project.image.url }}'); border-radius: 10px;">
+                    <div class="project-status">{{ project.status }}</div>
                   </div>
-                  <div class="col-6">
-                    <i class="fa fa-map"></i>
-                    <span class="list">موقع المشروع</span>
-                    <div class="value" style="text-align: center; font-size: large;">{{ project.address }}</div>
+                  {% else %}
+                  <div class="image" style="background-color: #881782; height: 100%;">
+                    <div class="project-status">{{ project.status }}</div>
                   </div>
+                  {% endif %}
                 </div>
-                <p>
-                  <span class="list">وصف المشروع</span>
-                  {{ project.discripe|safe }}
-                </p>
-                <div class="main-button1">
-                  <a href="{% url 'invreq' project.id %}">الاستثمار في المشروع</a>
-                  <a href="{% url 'project_detail' project.id %}">تعليقات حول المشروع</a>
+                <div class="col-lg-6 col-md-12 align-self-center">
+                  <div class="content">
+                    <span class="info">اسم المشروع: {{ project.title }} &nbsp;&nbsp; التقييم: {{ project.average_rating }}</span>
+                    <h4>التكلفة المقدرة: {{ project.cost }}</h4>
+                    <div class="row">
+                      <div class="col-6">
+                        <i class="fa fa-clock"></i>
+                        <span class="list">تصنيف المشروع</span>
+                        <div class="value" style="text-align: center; font-size: large; color: #000000;">{{ project.category }}</div>
+                      </div>
+                      <div class="col-6">
+                        <i class="fa fa-map"></i>
+                        <span class="list">موقع المشروع</span>
+                        <div class="value" style="text-align: center; font-size: large; color: #000000;">{{ project.address }}</div>
+                      </div>
+                    </div>
+                    <p>
+                      <span class="list">وصف المشروع</span>
+                      {{ project.discripe|safe }}
+                    </p>
+                    <div class="main-button1" >
+                      {% if request.user.investor %}
+                      <a href="{% url 'invreq' project.id %}">الاستثمار في المشروع</a>
+                      {% endif %}
+                      <a href="{% url 'project_detail' project.id %}">تعليقات حول المشروع</a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
         </div>
-                      
+        {% endfor %}
+      </div>
+      <div class="my-5 text-center">
+        <a href="{% url 'deals' %}" class="bg-Primary hover:bg-Primary/90 border-2 border-Primary text-StaticWhite focus:outline-Primary-300 transition-colors ease-in-out duration-300 rounded-lg p-2 outline-offset-2 text-center w-2/3 max-w-xs md:py-3">
+            <div class="text-lg md:text-xl" style="background-color: #22b3c1; font-size: 14px; color: #22b3c1; background-color: #eee; border: 1px solid #22b3c1; padding: 12px 30px; display: inline-block; border-radius: 25px; font-weight: 500; text-transform: capitalize; letter-spacing: 0.5px; transition: all .3s; position: relative; overflow: hidden;">
+                عرض المزيد
+            </div>
+        </a>
+    </div>
     
     </div>
-    {% endfor %}
-  </div>
-  <div class="my-5 text-center">
-    <button id="load-more-btn" class="bg-Primary hover:bg-Primary/90 border-2 border-Primary text-StaticWhite focus:outline-Primary-300 transition-colors ease-in-out duration-300 rounded-lg p-2 outline-offset-2 text-center w-2/3 max-w-xs md:py-3" type="button">
-      <div class="text-lg md:text-xl" style="background-color: #22b3c1; font-size: 14px; color: #22b3c1; background-color: #eee; border: 1px solid #22b3c1; padding: 12px 30px; display: inline-block; border-radius: 25px; font-weight: 500; text-transform: capitalize; letter-spacing: 0.5px; transition: all .3s; position: relative; overflow: hidden;">عرض المزيد</div>
-    </button>
-  </div>
-</div>
+    
 
 
 
@@ -276,6 +234,83 @@
         
 </div>
 </div></div>
+
+
+
+
+
+<div class="weekly-offers">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 offset-lg-3">
+        <div class="section-heading text-center">
+          <h2>اسعار باقات الاعلان عن مشروعك</h2>
+          <p style="font-size: larger;">قم بالاشتراك في الباقات للترويج لمشروعك لوصولة لاكبر عدد من المستثمرين </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="owl-weekly-offers owl-carousel">
+          <div class="item">
+            <div class="thumb">
+              <img src="assets/images/offers-01.jpg" alt="">
+              <div class="text">
+                <h4>الباقة الشهرية</h4><br>
+                <h6>$10</h6>
+                <div class="line-dec"></div>
+                <ul>
+                  
+                </ul>
+                <div class="main-button">
+                  <a href="project.html">مشاريعي</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="thumb">
+              <img src="assets/images/offers-03.jpg" alt="">
+              <div class="text">
+                <h4>الباقة الذهبية</h4><br>
+                <h6>$15</h6>
+                <div class="line-dec"></div>
+                <ul>
+                  
+                </ul>
+                <div class="main-button">
+                  <a href="project.html">مشاريعي</a>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="item">
+            <div class="thumb">
+              <img src="assets/images/offers-02.jpg" alt="">
+              <div class="text">
+                <h4>الباقةالاسبوعية</h4><br>
+                <h6>$5</h6>
+                <div class="line-dec"></div>
+                <ul>
+                  
+                </ul>
+                <div class="main-button">
+                  <a href="project.html">مشاريعي</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
 
 <div class="call-to-action2">
   <div class="container">
@@ -318,12 +353,11 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-8">
-        <h2>هل تبحث عن مشاريع للاستثمار فيها وربح المال من خلال المساهمة في المشاريع؟</h2>
         <h1>قم بالاعلان عن مشروعك لايجاد المستثمرين  </h1>
       </div>
       <div class="col-lg-4">
         <div class="border-button">
-          <a href="reservation.html">اسعار باقات</a>
+          <a href="reservation.html"> </a>
         </div>
       </div>
     </div>
@@ -332,7 +366,7 @@
 <script>
 
 document.getElementById('new-filter-form').addEventListener('submit', function (event) {
-  event.preventDefault(); // منع السلوك الافتراضي لتقديم النموذج
+  event.preventDefault(); 
 
   const selectedCategory = document.getElementById('categories').value;
 
@@ -369,13 +403,11 @@ document.getElementById('new-filter-form').addEventListener('submit', function (
         }
       });
 
-      // إظهار المشروعات غير المصنفة
       if (selectedCategory === 'all') {
         projectItems.forEach(item => {
           item.style.display = 'block';
         });
       } else {
-        // إظهار المشروعات غير المصنفة للتصنيف المحدد
         projectItems.forEach(item => {
           const itemCategory = item.dataset.category;
           if (!itemCategory) {
@@ -389,8 +421,8 @@ document.getElementById('new-filter-form').addEventListener('submit', function (
   var projectItems = document.querySelectorAll('.project-item');
   projectItems.forEach(function(projectItem) {
     projectItem.addEventListener('click', function() {
-      var projectId = this.id.replace('project', ''); // يحصل على معرف المشروع
-      window.location.href = '/project_detail/' + projectId + '/'; // توجيه المستخدم إلى صفحة تفاصيل المشروع
+      var projectId = this.id.replace('project', ''); // 
+      window.location.href = '/project_detail/' + projectId + '/'; // 
     });
   });
 });
@@ -411,7 +443,7 @@ document.getElementById('new-filter-form').addEventListener('submit', function (
     background-color: rgba(0, 0, 0, 0.6);
     padding: 30px;
     border-radius: 15px;
-    margin-top: -40%;
+    margin-top: -56%;
     position: relative;
     z-index: 1;
   }
@@ -469,7 +501,7 @@ document.getElementById('new-filter-form').addEventListener('submit', function (
   .project-image {
     width: 100%;
     height: 100%;
-    min-height: 300px; /* Minimum height for larger screens */
+    min-height: 300px; 
     background-size: cover;
     background-position: center;
     border-radius: 15px;
@@ -481,7 +513,7 @@ document.getElementById('new-filter-form').addEventListener('submit', function (
   
   @media (max-width: 768px) {
     .project-image {
-      min-height: 200px; /* Adjusted for smaller screens */
+      min-height: 200px;
     }
   
     .content {
@@ -565,14 +597,6 @@ document.getElementById('new-filter-form').addEventListener('submit', function (
     height: 100%;
     overflow: hidden;
   }
-
-  /* .image img {
-    width: 100%;j
-    height: 100%;
-    height: -webkit-fill-available;
-
-    object-fit: cover;
-} */
 
 
 
@@ -687,7 +711,7 @@ document.getElementById('new-filter-form').addEventListener('submit', function (
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  margin: 10px; /* Space between blocks */
+  margin: 10px; 
 }
 
 .info-text {
@@ -709,11 +733,11 @@ document.getElementById('new-filter-form').addEventListener('submit', function (
   background-color: #afafaf;
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
   .info-blockk {
     width: 100%;
-    margin: 10px 0; /* Full width and vertical spacing */
+    margin: 10px 0; 
   }
 }
 
@@ -733,7 +757,58 @@ document.getElementById('new-filter-form').addEventListener('submit', function (
     overflow: hidden;
 }
 
+
+.weekly-offers .item .thumb .text {
+    direction: rtl;
+    position: absolute;
+    background-color: #fff;
+    border-radius: 23px;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.15);
+    padding: 47px;
+    margin-right: 95px;
+}
+
+
+.project-status {
+  position: absolute;
+  background-color: #22b3c1;
+  padding: 7px;
+  border-top-left-radius: 10px ;
+  border-bottom-right-radius: 10px;
+}
+
+
+
+/*صفحة حسابي مالك مشروع ومستثمر خارب الناف 
+صلح فوتر صفحة التهنئة 
+مسافة من فوق في صفحة مراسلة الجدوى  للمالك
+شرط مايدخلك من القطعة ترفع مشروع الا اذا انته صاحب مشروع
+واستثمر عادي ياخذك الا الديلز
+شرط اذا ضفط رابط استثمر من الرئيسية اذا كان مستثمر فقط
+
+
+*/
   </style>   
   
 {% endblock %}
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -->

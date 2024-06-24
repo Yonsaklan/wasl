@@ -63,7 +63,7 @@ reservation
       <div class="col-lg-12">
         <form id="reservation-form" name="gs" method="POST" enctype="multipart/form-data">
            {% csrf_token %}
-
+                {% include 'parts/_alerts.html' %}
            <div class="row">
             <div class="col-lg-12"  id="dod">
               <h4>اضافة <em> مشروع </em>أو <em> استثمار </em>:</h4>
@@ -137,6 +137,11 @@ label {
 /* تنسيق الزر عند التحويل إلى الحالة النشطة (عند الضغط) */
 .main-button:active {
   background-color: #45a049;
+}
+
+select option[value=""][selected] {
+    color: #22b3c1;
+    text-align: center;    
 }
 
 </style>

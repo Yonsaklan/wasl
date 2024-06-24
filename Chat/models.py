@@ -3,18 +3,9 @@ from datetime import datetime
 from django.conf import settings
 from The_Owner.models import Owner
 from The_Investor.models import Investor
-from django.db import models
-from datetime import datetime
-from django.conf import settings
-from The_Owner.models import Owner
-from The_Investor.models import Investor
-from django.db import models
-from django.conf import settings
-from django.db import models
-from django.conf import settings
-from django.db import models
-from django.conf import settings
-#كلاس دراسة الجدوى التي يقوم بعملها مسؤل الدراسات للمشاريع التي يقدم المستخدمين طلب دراسات لها 
+# from FM.models import FinancialMovement  # استيراد FinancialMovement
+
+# كلاس دراسة الجدوى
 class FeasibilityStudy(models.Model):
     project_name = models.CharField(max_length=255)
     description = models.TextField()
@@ -27,13 +18,12 @@ class FeasibilityStudy(models.Model):
     owner = models.ForeignKey(Owner, on_delete=models.PROTECT, null=True, blank=True)
     investor = models.ForeignKey(Investor, on_delete=models.PROTECT, null=True, blank=True)
     is_allowed = models.BooleanField(default=False)
-    feasibility_study_request = models.ForeignKey('Chat.FeasibilityStudyRequest',
-                                                   on_delete=models.CASCADE, related_name='feasibility_studies', null=True, blank=True)  # استخدام اسم النموذج كسلسلة
+    feasibility_study_request = models.ForeignKey('FeasibilityStudyRequest', on_delete=models.CASCADE, related_name='feasibility_studies', null=True, blank=True)
 
     def __str__(self):
         return self.project_name
 
-#كلاس  الدردشة بين المسؤل عن عمل دراسات الجدوى وبن المستخدمين الذي طلبو دراسة جدوى
+# كلاس الدردشة
 class Chat(models.Model):
     admin = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT, null=True, blank=True, related_name='admin_chats')
     owner = models.ForeignKey(Owner, on_delete=models.PROTECT, null=True, blank=True)
@@ -53,7 +43,8 @@ class Chat(models.Model):
 
     def __str__(self):
         return f"Chat on {self.date} by {self.admin or self.owner or self.investor}"
-#   كلاس طلب دراسة جدوى  مع تحديد نوع الدراسة   
+
+# كلاس طلب دراسة الجدوى
 class FeasibilityStudyRequest(models.Model):
     STUDY_TYPE_CHOICES = [
         ('all', 'الكل'),
